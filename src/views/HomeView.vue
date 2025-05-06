@@ -1,5 +1,9 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import YouTubePlayer from '@/components/YouTubePlayer.vue'
+</script>
 
 <template>
-  <main></main>
+  <main>
+    <YouTubePlayer video-id="dBK0gKW61NU" :start-seconds="221" />
+  </main>
 </template>
