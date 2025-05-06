@@ -1,19 +1,25 @@
 <script setup lang="ts">
-import { state } from '@/socket'
-import { computed } from 'vue'
-import { RouterLink, RouterView } from 'vue-router'
+import '@/socket'
+import { socket } from '@/socket'
+import { useConnectionStore } from '@/stores/connection'
+import { usePlaybackStateStore } from '@/stores/playbackState'
+import { RouterView } from 'vue-router'
 
-const connected = computed(() => state.connected)
+const playbackStateStore = usePlaybackStateStore()
+const connectionStore = useConnectionStore()
+
+// remove any existing listeners (after a hot module replacement)
+socket.off()
+
+playbackStateStore.bindEvents()
+connectionStore.bindEvents()
 </script>
 
 <template>
-  <header>
-    <div class="wrapper">
-      <nav>
-        <RouterLink to="/">{{ connected }}</RouterLink>
-      </nav>
-    </div>
-  </header>
+  <div>
+    {{ connectionStore.isConnected ? 'connected' : 'disconnected' }}
+    <button @click="() => playbackStateStore.syncPlaybackState()">Sync</button>
+  </div>
 
   <RouterView />
 </template>

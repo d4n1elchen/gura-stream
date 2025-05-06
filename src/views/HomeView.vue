@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import YouTubePlayer from '@/components/YouTubePlayer.vue'
+import { usePlaybackStateStore } from '@/stores/playbackState'
+
+const playbackStateStore = usePlaybackStateStore()
 </script>
 
 <template>
   <main>
-    <YouTubePlayer video-id="dBK0gKW61NU" :start-seconds="221" />
+    <YouTubePlayer
+      :init-video-id="playbackStateStore.initVideoId"
+      :init-time="playbackStateStore.initTime"
+    />
   </main>
 </template>

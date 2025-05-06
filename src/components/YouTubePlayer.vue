@@ -3,11 +3,11 @@ import { useTemplateRef } from 'vue'
 import YouTube from 'vue3-youtube'
 
 const props = defineProps({
-  videoId: {
+  initVideoId: {
     type: String,
-    default: 'jNQXAC9IVRw',
+    default: '',
   },
-  startSeconds: {
+  initTime: {
     type: Number,
     default: 0,
   },
@@ -18,7 +18,6 @@ const player = useTemplateRef('player')
 function onReady() {
   if (player.value) {
     player.value.mute()
-    player.value.seekTo(props.startSeconds, true)
     player.value.playVideo()
   }
 }
@@ -26,8 +25,9 @@ function onReady() {
 
 <template>
   <YouTube
-    :src="`https://www.youtube.com/watch?v=${props.videoId}`"
+    :src="`https://www.youtube.com/watch?v=${props.initVideoId}`"
     @ready="onReady"
     ref="player"
+    :vars="{ start: props.initTime }"
   />
 </template>

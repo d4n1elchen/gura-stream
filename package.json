@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "watch": "vite build --watch",
+    "server-dev": "run-p watch-server watch-vue",
+    "watch-vue": "NODE_ENV=development vite build --watch --mode=development",
+    "watch-server": "tsx watch ./server.ts",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
