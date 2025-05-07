@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { useChatStore } from '@/stores/chat'
 import { useConnectionStore } from '@/stores/connection'
+import { usePlaybackStateStore } from '@/stores/playbackState'
 import { ref } from 'vue'
 
 const chatStore = useChatStore()
 const connectionStore = useConnectionStore()
+const playbackStateStore = usePlaybackStateStore()
 
 const newMessage = ref('')
 const userId = ref('')
 
 const sendMessage = () => {
-  if (newMessage.value.trim() !== '') {
+  if (newMessage.value.trim() !== '' && userId.value.trim() !== '') {
     chatStore.sendMessage(userId.value, newMessage.value)
     newMessage.value = ''
   }
@@ -19,12 +21,21 @@ const sendMessage = () => {
 
 <style lang="scss" scoped>
 .chat {
-  height: 460px;
   display: flex;
   flex-direction: column;
 
+  .status-bar {
+    display: flex;
+    align-items: center;
+
+    .status {
+      flex-grow: 1;
+    }
+  }
+
   .messages {
     flex-grow: 1;
+    overflow-y: scroll;
   }
 
   .chat-input {
@@ -36,9 +47,17 @@ const sendMessage = () => {
 
 <template>
   <div class="chat ts-box">
-    <div class="status ts-content">
-      <span :style="`color: ${connectionStore.isConnected ? 'green' : 'red'}`">◉</span>
-      {{ connectionStore.isConnected ? 'Connected' : 'Disconnected' }} to Chat
+    <div class="status-bar ts-content">
+      <div class="status">
+        <span :style="`color: ${connectionStore.isConnected ? 'green' : 'red'}`">◉</span>
+        {{ connectionStore.isConnected ? 'Connected' : 'Disconnected' }} to Chat
+      </div>
+      <button
+        class="ts-button is-small is-dense"
+        @click="() => playbackStateStore.syncPlaybackState()"
+      >
+        Sync Video Progress
+      </button>
     </div>
     <div class="ts-divider"></div>
     <div class="messages ts-content">

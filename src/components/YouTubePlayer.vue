@@ -40,11 +40,23 @@ function onReady() {
 }
 </script>
 
+<style scoped lang="scss">
+:deep(iframe) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+</style>
+
 <template>
   <YouTube
     :src="`https://www.youtube.com/watch?v=${props.initVideoId}`"
     @ready="onReady"
     ref="player"
     :vars="{ start: props.initTime }"
+    width="100%"
+    height="100%"
   />
 </template>

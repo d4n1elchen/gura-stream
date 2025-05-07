@@ -8,12 +8,24 @@ const playbackStateStore = usePlaybackStateStore()
 playbackStateStore.bindEvents()
 </script>
 
+<style scoped lang="scss">
+#player {
+  height: 460px;
+  width: 100%;
+}
+#chat {
+  height: 460px;
+  margin: 20px 0;
+}
+</style>
+
 <template>
   <main>
     <YouTubePlayer
       :init-video-id="playbackStateStore.initVideoId"
       :init-time="playbackStateStore.initTime"
+      id="player"
     />
-    <ChatRoom />
+    <ChatRoom id="chat" />
   </main>
 </template>

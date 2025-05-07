@@ -19,10 +19,6 @@ chatStore.bindEvents()
 </script>
 
 <template>
-  <div>
-    <button @click="() => playbackStateStore.syncPlaybackState()">Sync</button>
-  </div>
-
   <RouterView />
 </template>
 
