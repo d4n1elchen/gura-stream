@@ -9,13 +9,23 @@ playbackStateStore.bindEvents()
 </script>
 
 <style scoped lang="scss">
-#player {
-  height: 460px;
-  width: 100%;
-}
-#chat {
-  height: 460px;
-  margin: 20px 0;
+main {
+  height: 100vh;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+  #player {
+    height: 60%;
+    width: 100%;
+  }
+  #chat {
+    height: 60%;
+    width: 560px;
+  }
 }
 </style>
 

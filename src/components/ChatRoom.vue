@@ -41,6 +41,13 @@ const sendMessage = () => {
   .chat-input {
     display: flex;
     gap: 10px;
+
+    .user-id-input {
+      flex: 1;
+    }
+    .message-input {
+      flex: 2;
+    }
   }
 }
 </style>
@@ -50,13 +57,13 @@ const sendMessage = () => {
     <div class="status-bar ts-content">
       <div class="status">
         <span :style="`color: ${connectionStore.isConnected ? 'green' : 'red'}`">◉</span>
-        {{ connectionStore.isConnected ? 'Connected' : 'Disconnected' }} to Chat
+        {{ connectionStore.isConnected ? 'Connected' : 'Disconnected' }} to server
       </div>
       <button
         class="ts-button is-small is-dense"
         @click="() => playbackStateStore.syncPlaybackState()"
       >
-        Sync Video Progress
+        Sync Progress
       </button>
     </div>
     <div class="ts-divider"></div>
@@ -67,10 +74,10 @@ const sendMessage = () => {
     </div>
     <div class="ts-divider"></div>
     <div class="chat-input ts-content">
-      <div class="ts-input">
-        <input v-model="userId" placeholder="Your name..." />
+      <div class="user-id-input ts-input">
+        <input v-model="userId" placeholder="Name" />
       </div>
-      <div class="ts-input">
+      <div class="message-input ts-input">
         <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="Chat..." />
       </div>
     </div>

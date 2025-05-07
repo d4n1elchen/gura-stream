@@ -1,11 +1,5 @@
 @import './base.css';
 
-#app {
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
-}
-
 a,
 .green {
   text-decoration: none;
@@ -24,9 +18,5 @@ a,
   body {
     display: flex;
     place-items: center;
-  }
-
-  #app {
-    padding: 0 2rem;
   }
 }
