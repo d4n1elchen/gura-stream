@@ -10,6 +10,7 @@ playbackStateStore.bindEvents()
 
 <style scoped lang="scss">
 main {
+  padding: 10px 0;
   height: 100vh;
   display: flex;
   gap: 10px;
@@ -18,13 +19,25 @@ main {
   @media (max-width: 768px) {
     flex-direction: column;
   }
+
   #player {
     height: 60%;
-    width: 100%;
+    flex-grow: 1;
+
+    @media (max-width: 768px) {
+      height: auto;
+      width: 100%;
+    }
   }
+
   #chat {
     height: 60%;
-    width: 560px;
+    width: 460px;
+
+    @media (max-width: 768px) {
+      width: 100%;
+      flex-grow: 1;
+    }
   }
 }
 </style>
