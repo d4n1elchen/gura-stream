@@ -17,7 +17,7 @@ app.use(serveStatic(__dirname + '/dist'))
 
 const playbackState: PlaybackState = {
   videoId: 'dBK0gKW61NU',
-  time: 221,
+  time: 220,
 }
 
 io.on('connection', (socket) => {
