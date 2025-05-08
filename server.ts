@@ -20,6 +20,8 @@ app.use(serveStatic(__dirname + '/dist'))
 type VideoInfo = {
   id: string
   length: number
+  title: string
+  timestamp: number
 }
 
 type PlayerState = {
@@ -97,13 +99,24 @@ type ServerState = {
 // Read the server state from a file if it exists
 let serverState: ServerState
 try {
-  const data = fs.readFileSync('serverState.json', 'utf8')
-  serverState = JSON.parse(data)
-} catch {
+  const serverStateFile = fs.readFileSync('serverState.json', 'utf8')
+  serverState = JSON.parse(serverStateFile)
+  const playlistFile = fs.readFileSync('playlist.json', 'utf8')
+  const playlist = JSON.parse(playlistFile)
+  serverState.playerState.playlist = playlist
+} catch (err) {
+  console.log('Error reading server state file, initializing with default values:', err)
   // Initialize with default values if the file does not exist
   serverState = {
     playerState: {
-      playlist: [{ id: 'dBK0gKW61NU', length: 3200 }],
+      playlist: [
+        {
+          id: 'dBK0gKW61NU',
+          length: 3200,
+          title: '[DEBUT STREAM] SHAAAAAARK #hololiveEnglish #holoMyth',
+          timestamp: 1599948752,
+        },
+      ],
       currentVideoIndex: 0,
       currentTime: 220,
     },
