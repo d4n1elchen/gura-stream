@@ -1,11 +1,7 @@
 import { socket } from '@/socket'
+import type { ChatMessage } from '@common/types'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-
-export type ChatMessage = {
-  userId: string
-  message: string
-}
 
 export const useChatStore = defineStore('chat', () => {
   const chat = ref([] as ChatMessage[])

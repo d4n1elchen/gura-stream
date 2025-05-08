@@ -1,21 +1,16 @@
+import type { ChatMessage, PlaybackState } from '@common/types'
 import express from 'express'
 import fs from 'fs'
 import { createServer } from 'http'
-import { dirname } from 'path'
-import serveStatic from 'serve-static'
 import { Server } from 'socket.io'
-import { fileURLToPath } from 'url'
-import { type ChatMessage } from './src/stores/chat.js'
-import { type PlaybackState } from './src/stores/playbackState.js'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
 
 const app = express()
 const server = createServer(app)
-const io = new Server(server)
-
-app.use(serveStatic(__dirname + '/dist'))
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:5173',
+  },
+})
 
 type VideoInfo = {
   id: string

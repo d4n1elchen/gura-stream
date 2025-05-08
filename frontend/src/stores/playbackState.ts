@@ -1,12 +1,8 @@
 import { emitter } from '@/event'
 import { socket } from '@/socket'
+import type { PlaybackState } from '@common/types'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-
-export type PlaybackState = {
-  videoId: string
-  time: number
-}
 
 export const usePlaybackStateStore = defineStore('playback-state', () => {
   const initVideoId = ref('')

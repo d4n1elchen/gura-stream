@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { emitter } from '@/event'
-import { type PlaybackState } from '@/stores/playbackState'
+import { type PlaybackState } from '@common/types'
 import { useTemplateRef } from 'vue'
 import YouTube from 'vue3-youtube'
 
