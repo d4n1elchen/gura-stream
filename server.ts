@@ -101,9 +101,6 @@ let serverState: ServerState
 try {
   const serverStateFile = fs.readFileSync('serverState.json', 'utf8')
   serverState = JSON.parse(serverStateFile)
-  const playlistFile = fs.readFileSync('playlist.json', 'utf8')
-  const playlist = JSON.parse(playlistFile)
-  serverState.playerState.playlist = playlist
 } catch (err) {
   console.log('Error reading server state file, initializing with default values:', err)
   // Initialize with default values if the file does not exist
@@ -118,10 +115,19 @@ try {
         },
       ],
       currentVideoIndex: 0,
-      currentTime: 220,
+      currentTime: 0,
     },
     chatHistory: [{ userId: 'Gura', message: 'A!' }],
   }
+}
+
+// Read the playlist from a file if it exists
+try {
+  const playlistFile = fs.readFileSync('playlist.json', 'utf8')
+  const playlist = JSON.parse(playlistFile)
+  serverState.playerState.playlist = playlist
+} catch {
+  // If the playlist file does not exist, use the default playlist
 }
 
 const player = new SimPlayer(serverState.playerState, (state: PlaybackState) => {
