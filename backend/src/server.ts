@@ -37,7 +37,7 @@ try {
         },
       ],
       currentVideoIndex: 0,
-      currentTime: 0,
+      currentTime: 220,
     },
     chatHistory: [{ userId: 'Gura', message: 'A!' }],
   }
