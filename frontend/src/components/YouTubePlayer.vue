@@ -20,7 +20,7 @@ const player = useTemplateRef('player')
 function updatePlaybackState(state: PlaybackState) {
   const videoURL = `https://youtube.com/?v=${state.videoId}`
   const time = state.time
-  if (player.value) {
+  if (player.value?.ready) {
     if (player.value.getVideoUrl() !== videoURL) {
       player.value.loadVideoById(state.videoId, time)
     } else {
@@ -34,7 +34,22 @@ function onReady() {
     player.value.mute()
     player.value.playVideo()
     emitter.on('sync-playback-state', (state: PlaybackState) => {
-      updatePlaybackState(state)
+      const maxRetries = 3
+      let retries = 0
+      const interval = setInterval(() => {
+        if (retries >= maxRetries) {
+          clearInterval(interval)
+          return
+        }
+        retries++
+        try {
+          updatePlaybackState(state)
+          clearInterval(interval)
+        } catch (error) {
+          console.warn('Error updating playback state: ', error)
+          console.warn('Retrying in 1 second...')
+        }
+      }, 1000)
     })
   }
 }

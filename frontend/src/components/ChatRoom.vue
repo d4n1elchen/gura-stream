@@ -2,7 +2,7 @@
 import { useChatStore } from '@/stores/chat'
 import { useConnectionStore } from '@/stores/connection'
 import { usePlaybackStateStore } from '@/stores/playbackState'
-import { ref } from 'vue'
+import { nextTick, onMounted, ref, useTemplateRef, watch } from 'vue'
 
 const chatStore = useChatStore()
 const connectionStore = useConnectionStore()
@@ -11,12 +11,23 @@ const playbackStateStore = usePlaybackStateStore()
 const newMessage = ref('')
 const userId = ref('')
 
-const sendMessage = () => {
+function sendMessage() {
   if (newMessage.value.trim() !== '' && userId.value.trim() !== '') {
     chatStore.sendMessage(userId.value, newMessage.value)
     newMessage.value = ''
   }
 }
+
+const chatBottom = useTemplateRef('chat-bottom')
+
+function scrollToBottom() {
+  nextTick(() => {
+    chatBottom.value?.scrollIntoView({ behavior: 'smooth' })
+  })
+}
+
+onMounted(scrollToBottom)
+watch(chatStore.chat, scrollToBottom)
 </script>
 
 <style lang="scss" scoped>
@@ -69,8 +80,9 @@ const sendMessage = () => {
     <div class="ts-divider"></div>
     <div class="messages ts-content">
       <div v-for="message in chatStore.chat" :key="message.userId" class="message">
-        <span class="ts-text is-bold">{{ message.userId }}</span> {{ message.message }}
+        <span class="ts-text is-heavy">{{ message.userId }}</span> {{ message.message }}
       </div>
+      <div ref="chat-bottom"></div>
     </div>
     <div class="ts-divider"></div>
     <div class="chat-input ts-content">
