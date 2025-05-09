@@ -2,7 +2,7 @@
 import { useChatStore } from '@/stores/chat'
 import { useConnectionStore } from '@/stores/connection'
 import { usePlaybackStateStore } from '@/stores/playbackState'
-import { nextTick, onMounted, ref, useTemplateRef, watch } from 'vue'
+import { nextTick, onUpdated, ref, useTemplateRef, watch } from 'vue'
 
 const chatStore = useChatStore()
 const connectionStore = useConnectionStore()
@@ -26,7 +26,7 @@ function scrollToBottom() {
   })
 }
 
-onMounted(scrollToBottom)
+onUpdated(scrollToBottom)
 watch(chatStore.chat, scrollToBottom)
 </script>
 
