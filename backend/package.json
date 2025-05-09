@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "tsc --watch & nodemon dist/backend/src/server.js --ignore '**/*.json'",
+    "dev": "tsc --build --watch & nodemon dist/server.js --ignore '**/*.json'",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
