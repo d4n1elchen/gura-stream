@@ -3,6 +3,7 @@ import express from 'express'
 import fs from 'fs'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
+import { PlayerState, SimPlayer } from './player'
 
 const app = express()
 const server = createServer(app)
@@ -11,81 +12,6 @@ const io = new Server(server, {
     origin: 'http://localhost:5173',
   },
 })
-
-type VideoInfo = {
-  id: string
-  length: number
-  title: string
-  timestamp: number
-}
-
-type PlayerState = {
-  playlist: VideoInfo[]
-  currentVideoIndex: number
-  currentTime: number
-}
-
-// Simulate a YouTube video player
-class SimPlayer {
-  playlist: VideoInfo[] = []
-  currentVideoIndex: number = 0
-  currentTime: number = 0
-  onNext: (state: PlaybackState) => void
-  playerIntervalId: NodeJS.Timeout | null = null
-
-  constructor(initState: PlayerState, onNext: (state: PlaybackState) => void) {
-    this.playlist = initState.playlist
-    this.currentVideoIndex = initState.currentVideoIndex
-    this.currentTime = initState.currentTime
-    this.onNext = onNext
-  }
-
-  toPlaybackState(): PlaybackState {
-    return {
-      videoId: this.playlist[this.currentVideoIndex].id,
-      time: this.currentTime,
-    }
-  }
-
-  toPlayerState(): PlayerState {
-    return {
-      playlist: this.playlist,
-      currentVideoIndex: this.currentVideoIndex,
-      currentTime: this.currentTime,
-    }
-  }
-
-  play() {
-    this.playerIntervalId = setInterval(() => {
-      this.currentTime++
-
-      if (this.currentTime >= this.playlist[this.currentVideoIndex].length) {
-        this.stop()
-
-        setTimeout(() => {
-          console.log(`Playing next video: ${this.playlist[this.currentVideoIndex].title}`)
-          this.currentVideoIndex++
-          if (this.currentVideoIndex >= this.playlist.length) {
-            this.currentVideoIndex = 0
-          }
-          this.currentTime = 0
-          serverState.playerState = this.toPlayerState()
-          this.onNext(this.toPlaybackState())
-          this.play()
-        }, 3000)
-      }
-
-      serverState.playerState = this.toPlayerState()
-    }, 1000)
-  }
-
-  stop() {
-    if (this.playerIntervalId) {
-      clearInterval(this.playerIntervalId)
-      this.playerIntervalId = null
-    }
-  }
-}
 
 type ServerState = {
   playerState: PlayerState
@@ -126,9 +52,16 @@ try {
   // If the playlist file does not exist, use the default playlist
 }
 
-const player = new SimPlayer(serverState.playerState, (state: PlaybackState) => {
-  io.emit('update-playback-state', state)
-})
+const player = new SimPlayer(
+  serverState.playerState,
+  (state: PlayerState) => {
+    serverState.playerState = state
+  },
+  (state: PlaybackState) => {
+    console.log(`Playing next video: ${state.videoId}`)
+    io.emit('update-playback-state', state)
+  }
+)
 player.play()
 
 io.on('connection', (socket) => {
