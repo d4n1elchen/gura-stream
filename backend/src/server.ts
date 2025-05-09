@@ -63,6 +63,7 @@ class SimPlayer {
         this.stop()
 
         setTimeout(() => {
+          console.log(`Playing next video: ${this.playlist[this.currentVideoIndex].title}`)
           this.currentVideoIndex++
           if (this.currentVideoIndex >= this.playlist.length) {
             this.currentVideoIndex = 0
