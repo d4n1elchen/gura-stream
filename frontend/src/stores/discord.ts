@@ -1,3 +1,4 @@
+import { type UserInfo } from '@common/types'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -6,7 +7,7 @@ const URL = process.env.NODE_ENV === 'production' ? undefined : 'http://localhos
 
 export const useDiscordStore = defineStore('discord', () => {
   const isLoggedIn = ref(false)
-  const username = ref('')
+  const user = ref({} as UserInfo)
   const backend = axios.create({
     withCredentials: true,
     baseURL: URL,
@@ -27,15 +28,14 @@ export const useDiscordStore = defineStore('discord', () => {
 
   async function fetchUserInfo() {
     try {
-      const response = await backend.post('/user')
-      const { id, username: userName } = response.data
+      const response = await backend.post<UserInfo>('/user')
       isLoggedIn.value = true
-      username.value = userName
+      user.value = response.data
     } catch (error) {
       console.error('Error fetching user info:', error)
-      username.value = ''
+      user.value = {} as UserInfo
     }
   }
 
-  return { isLoggedIn, username, login, fetchUserInfo }
+  return { isLoggedIn, user, login, fetchUserInfo }
 })

@@ -1,5 +1,5 @@
 import { socket } from '@/socket'
-import type { ChatMessage } from '@common/types'
+import type { ChatMessage, UserInfo } from '@common/types'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -16,8 +16,8 @@ export const useChatStore = defineStore('chat', () => {
     })
   }
 
-  function sendMessage(userId: string, message: string) {
-    const chatMessage: ChatMessage = { userId, message }
+  function sendMessage(user: UserInfo, message: string) {
+    const chatMessage: ChatMessage = { user, message }
     socket.emit('send-message', chatMessage)
   }
 

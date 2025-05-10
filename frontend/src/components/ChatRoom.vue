@@ -21,9 +21,13 @@ function goToDiscordLogin() {
   window.location.href = oauth2Url
 }
 
+function getAvatarUrl(avatar: string) {
+  return `https://cdn.discordapp.com/avatars/${discordStore.user?.id}/${avatar}.png`
+}
+
 function sendMessage() {
-  if (newMessage.value.trim() !== '' && discordStore.isLoggedIn) {
-    chatStore.sendMessage(discordStore.username, newMessage.value.trim())
+  if (newMessage.value.trim() !== '' && discordStore.isLoggedIn && discordStore.user) {
+    chatStore.sendMessage(discordStore.user, newMessage.value.trim())
     newMessage.value = ''
   }
 }
@@ -57,6 +61,23 @@ watch(chatStore.chat, scrollToBottom)
   .messages {
     flex-grow: 1;
     overflow-y: scroll;
+
+    .message {
+      margin-bottom: 10px;
+      line-height: 2em;
+
+      .avatar {
+        display: inline-block;
+        width: 1.5em;
+        height: 1.5em;
+        margin-right: 10px;
+        vertical-align: middle;
+      }
+
+      .username {
+        margin-right: 5px;
+      }
+    }
   }
 
   .chat-input {
@@ -90,8 +111,12 @@ watch(chatStore.chat, scrollToBottom)
     </div>
     <div class="ts-divider"></div>
     <div class="messages ts-content">
-      <div v-for="message in chatStore.chat" :key="message.userId" class="message">
-        <span class="ts-text is-heavy">{{ message.userId }}</span> {{ message.message }}
+      <div v-for="message in chatStore.chat" :key="message.user.id" class="message">
+        <span class="avatar ts-image is-circular"
+          ><img :src="getAvatarUrl(message.user.avatar)" alt="" srcset=""
+        /></span>
+        <span class="username ts-text is-heavy">{{ message.user.username }}</span>
+        {{ message.message }}
       </div>
       <div ref="chat-bottom"></div>
     </div>

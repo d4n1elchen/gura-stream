@@ -1,5 +1,6 @@
 import type { ChatMessage, PlaybackState, UserInfo } from '@common/types'
 import axios, { AxiosError } from 'axios'
+import { RedisStore } from 'connect-redis'
 import cors from 'cors'
 import express from 'express'
 import session from 'express-session'
@@ -19,13 +20,27 @@ const app = express()
 const server = createServer(app)
 const io = new Server(server, { cors: corsOptions })
 const redis = new Redis()
+const redisStore = new RedisStore({
+  client: redis,
+  prefix: 'session:',
+})
 
 app.use(cors(corsOptions))
 app.use(express.json())
+app.use(
+  session({
+    store: redisStore,
+    secret: 'supersecretkey',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+    },
+  })
+)
 
 type ServerState = {
   playerState: PlayerState
-  chatHistory: ChatMessage[]
 }
 
 // Read the server state from a file if it exists
@@ -49,7 +64,6 @@ try {
       currentVideoIndex: 0,
       currentTime: 220,
     },
-    chatHistory: [{ userId: 'Gura', message: 'A!' }],
   }
 }
 
@@ -74,7 +88,7 @@ const player = new SimPlayer(
 )
 player.play()
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
   console.log('a user connected: ' + socket.id)
 
   // Playback state sync
@@ -84,13 +98,17 @@ io.on('connection', (socket) => {
     socket.emit('update-playback-state', player.toPlaybackState())
   })
 
-  // Chat
-  socket.emit('message-history', serverState.chatHistory)
+  const chatHistoryPlain = await redis.lrange('chat-history', 0, -1)
+  if (chatHistoryPlain.length > 0) {
+    const chatHistory: ChatMessage[] = chatHistoryPlain.map((message) => JSON.parse(message))
+    socket.emit('message-history', chatHistory)
+  }
 
-  socket.on('send-message', (message: ChatMessage) => {
-    serverState.chatHistory.push(message)
-    if (serverState.chatHistory.length > 100) {
-      serverState.chatHistory.shift()
+  socket.on('send-message', async (message: ChatMessage) => {
+    console.log('Received message:', message)
+    const pos = await redis.rpush('chat-history', JSON.stringify(message))
+    if (pos > 100) {
+      await redis.ltrim('chatHistory', 0, 99)
     }
     io.emit('new-message', message)
   })
@@ -101,17 +119,6 @@ setInterval(() => {
   // Save serverState to a file (e.g., JSON)
   fs.writeFileSync('serverState.json', JSON.stringify(serverState))
 }, 5000)
-
-app.use(
-  session({
-    secret: 'supersecretkey',
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      secure: process.env.NODE_ENV === 'production',
-    },
-  })
-)
 
 app.post('/login', async ({ body, session }, res) => {
   if (session.userId && (await redis.exists(`user:${session.userId}`)) === 1) {
