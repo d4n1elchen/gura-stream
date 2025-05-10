@@ -16,7 +16,6 @@ services:
         required: true # default
       - path: ./production.env
         required: false
-    environment:
     develop:
       watch:
         - action: sync
