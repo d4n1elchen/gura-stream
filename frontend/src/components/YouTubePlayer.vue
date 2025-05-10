@@ -38,6 +38,7 @@ function updatePlaybackState(state: PlaybackState) {
 function onReady() {
   if (player.value) {
     player.value.mute()
+    player.value.loadVideoById(props.initVideoId, props.initTime)
     player.value.playVideo()
     emitter.on('sync-playback-state', (state: PlaybackState) => {
       const maxRetries = 3
