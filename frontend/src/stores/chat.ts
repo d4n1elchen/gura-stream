@@ -15,6 +15,8 @@ export const useChatStore = defineStore('chat', () => {
       console.log('Message history:', messages)
       chat.value = messages
     })
+
+    socket.emit('request-message-history')
   }
 
   function sendMessage(user: UserInfo, message: string) {

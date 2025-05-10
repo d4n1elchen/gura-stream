@@ -43,6 +43,7 @@ main {
 <template>
   <main>
     <YouTubePlayer
+      :v-if="playbackStateStore.initVideoId !== ''"
       :init-video-id="playbackStateStore.initVideoId"
       :init-time="playbackStateStore.initTime"
       id="player"

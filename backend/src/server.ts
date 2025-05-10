@@ -97,17 +97,21 @@ io.on('connection', async (socket) => {
   console.log('a user connected: ' + socket.id)
 
   // Playback state sync
-  socket.emit('init-playback-state', player.toPlaybackState())
+  socket.on('request-init-playback-state', () => {
+    socket.emit('init-playback-state', player.toPlaybackState())
+  })
 
   socket.on('sync-playback-state', () => {
     socket.emit('update-playback-state', player.toPlaybackState())
   })
 
-  const chatHistoryPlain = await redis.lrange('chat-history', 0, -1)
-  if (chatHistoryPlain.length > 0) {
-    const chatHistory: ChatMessage[] = chatHistoryPlain.map((message) => JSON.parse(message))
-    socket.emit('message-history', chatHistory)
-  }
+  socket.on('request-message-history', async () => {
+    const chatHistoryPlain = await redis.lrange('chat-history', 0, -1)
+    if (chatHistoryPlain.length > 0) {
+      const chatHistory: ChatMessage[] = chatHistoryPlain.map((message) => JSON.parse(message))
+      socket.emit('message-history', chatHistory)
+    }
+  })
 
   socket.on('send-message', async (message: ChatMessage) => {
     console.log('Received message:', message)
