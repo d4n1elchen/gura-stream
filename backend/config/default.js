@@ -1,0 +1,7 @@
+module.exports = {
+  discord: {
+    clientId: 'YOUR_DISCORD_CLIENT_ID',
+    clientSecret: 'YOUR_DISCORD_CLIENT_SECRET',
+    redirectUri: 'http://localhost:3000/auth/discord/callback',
+  },
+}

@@ -1,10 +1,12 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/server.js",
   "scripts": {
-    "dev": "tsc --build --watch & nodemon dist/server.js --ignore '**/*.json'",
-    "build": "tsc",
+    "dev": "tsc --build --watch & nodemon --ignore '**/*.json'",
+    "prebuild": "npm run clean",
+    "build": "tsc --build",
+    "clean": "tsc --build --clean",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -12,12 +14,19 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/config": "^3.3.5",
     "@types/express": "^4.17.1",
+    "@types/express-session": "^1.18.1",
+    "@types/ioredis": "^4.28.10",
     "typescript": "^5.8.3"
   },
   "dependencies": {
     "@types/node": "^22.15.16",
+    "axios": "^1.9.0",
+    "config": "^3.3.12",
     "express": "^4.17.1",
+    "express-session": "^1.18.1",
+    "ioredis": "^5.6.1",
     "socket.io": "^4.8.1"
   }
 }

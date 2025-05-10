@@ -1,8 +1,11 @@
 import type { ChatMessage, PlaybackState } from '@common/types'
 import express from 'express'
+import session from 'express-session'
 import fs from 'fs'
 import { createServer } from 'http'
+import Redis from 'ioredis'
 import { Server } from 'socket.io'
+import { discord } from './discord'
 import { PlayerState, SimPlayer } from './player'
 
 const app = express()
@@ -12,6 +15,7 @@ const io = new Server(server, {
     origin: 'http://localhost:5173',
   },
 })
+const redis = new Redis()
 
 type ServerState = {
   playerState: PlayerState
@@ -91,6 +95,32 @@ setInterval(() => {
   // Save serverState to a file (e.g., JSON)
   fs.writeFileSync('serverState.json', JSON.stringify(serverState))
 }, 5000)
+
+app.use(
+  session({
+    secret: 'supersecretkey',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true },
+  })
+)
+
+app.post('/login', async ({ query, session }, res) => {
+  const code = query.code
+  if (!code) {
+    res.status(400).send('Missing code')
+    return
+  }
+  try {
+    const token = await discord.getToken(code as string)
+    const member = await discord.getGuildMember('guildid', token.access_token)
+    session.username = member.user.username
+    redis.set(`user:${member.user.id}`, JSON.stringify(member))
+    res.status(200).send('OK')
+  } catch (err) {
+    res.send(err)
+  }
+})
 
 server.listen(3000, () => {
   console.log('listening on *:3000')

@@ -7,9 +7,9 @@
 
     /* Module Resolution */
     "paths": {
-      "@/*": ["./src/*"],
       "@common/*": ["../common/*"]
     }
   },
+  "exclude": ["config", "dist", "node_modules"],
   "references": [{ "path": "../common" }]
 }
