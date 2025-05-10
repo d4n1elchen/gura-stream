@@ -30,6 +30,8 @@ function updatePlaybackState(state: PlaybackState) {
     } else {
       player.value.seekTo(time, true)
     }
+  } else {
+    throw new Error('Player is not ready')
   }
 }
 
