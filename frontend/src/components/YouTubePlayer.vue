@@ -11,13 +11,17 @@ const props = defineProps({
   },
   initTime: {
     type: Number,
-    default: 0,
+    default: 220,
   },
 })
 
 const player = useTemplateRef('player')
 
 function updatePlaybackState(state: PlaybackState) {
+  if (!state.videoId) {
+    console.warn('No video ID provided in playback state')
+    return
+  }
   const videoURL = `https://youtube.com/?v=${state.videoId}`
   const time = state.time
   if (player.value?.ready) {

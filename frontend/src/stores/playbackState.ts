@@ -5,8 +5,8 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const usePlaybackStateStore = defineStore('playback-state', () => {
-  const initVideoId = ref('')
-  const initTime = ref(0)
+  const initVideoId = ref('dBK0gKW61NU')
+  const initTime = ref(220)
 
   function bindEvents() {
     socket.on('init-playback-state', (state: PlaybackState) => {
