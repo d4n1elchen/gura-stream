@@ -15,15 +15,13 @@ const newMessage = ref('')
 
 discordStore.fetchUserInfo()
 
-const oauth2Url =
-  'https://discord.com/oauth2/authorize?client_id=1370294188238835722&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2F&scope=identify+guilds.members.read'
-
 function goToDiscordLogin() {
+  const oauth2Url = `https://discord.com/oauth2/authorize?client_id=1370294188238835722&response_type=code&redirect_uri=${encodeURIComponent(window.location.protocol + '//' + window.location.host)}&scope=identify+guilds.members.read`
   window.location.href = oauth2Url
 }
 
-function getAvatarUrl(avatar: string) {
-  return `https://cdn.discordapp.com/avatars/${discordStore.user?.id}/${avatar}.png`
+function getAvatarUrl(user: UserInfo) {
+  return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
 }
 
 function isForeverShimp(user: UserInfo) {
@@ -33,6 +31,7 @@ function isForeverShimp(user: UserInfo) {
 
 function sendMessage() {
   if (newMessage.value.trim() !== '' && discordStore.isLoggedIn && discordStore.user) {
+    console.log(discordStore.user)
     chatStore.sendMessage(discordStore.user, newMessage.value.trim())
     newMessage.value = ''
   }
@@ -123,7 +122,7 @@ watch(chatStore.chat, scrollToBottom)
     <div class="messages ts-content">
       <div v-for="message in chatStore.chat" :key="message.user.id" class="message">
         <span class="avatar ts-image is-circular"
-          ><img :src="getAvatarUrl(message.user.avatar)" alt="" srcset=""
+          ><img :src="getAvatarUrl(message.user)" alt="" srcset=""
         /></span>
         <span
           class="username ts-text is-heavy"

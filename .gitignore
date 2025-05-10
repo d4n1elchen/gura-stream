@@ -32,3 +32,5 @@ coverage
 backend/config/production.js
 backend/config/development.js
 backend/serverState.json
+
+production.env

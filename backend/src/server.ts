@@ -10,16 +10,20 @@ import Redis from 'ioredis'
 import { Server } from 'socket.io'
 import { discord } from './discord'
 import { PlayerState, SimPlayer } from './player'
+import config from 'config'
 
 const corsOptions = {
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:5173', 'http://localhost:8080', 'https://gura.danielchen.cc'],
   credentials: true,
 }
+
+const redisHost = config.get<string>('redis.host')
+const redisPort = config.get<number>('redis.port')
 
 const app = express()
 const server = createServer(app)
 const io = new Server(server, { cors: corsOptions })
-const redis = new Redis()
+const redis = new Redis(redisPort, redisHost)
 const redisStore = new RedisStore({
   client: redis,
   prefix: 'session:',

@@ -12,6 +12,7 @@ export const useChatStore = defineStore('chat', () => {
     })
 
     socket.on('message-history', (messages: ChatMessage[]) => {
+      console.log('Message history:', messages)
       chat.value = messages
     })
   }
