@@ -1,8 +1,6 @@
 services:
   redis:
     image: redis:latest
-    ports:
-      - '6377:6379'
   frontend:
     build:
       context: .
