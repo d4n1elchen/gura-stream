@@ -16,7 +16,6 @@ export const useDiscordStore = defineStore('discord', () => {
     try {
       const response = await backend.post('/login', { code })
       if (response.status === 200) {
-        isLoggedIn.value = true
         await fetchUserInfo()
       }
     } catch (error) {
@@ -34,6 +33,7 @@ export const useDiscordStore = defineStore('discord', () => {
     } catch (error) {
       console.error('Error fetching user info:', error)
       user.value = {} as UserInfo
+      isLoggedIn.value = false
     }
   }
 
