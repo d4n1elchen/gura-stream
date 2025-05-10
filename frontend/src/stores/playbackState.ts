@@ -12,6 +12,7 @@ export const usePlaybackStateStore = defineStore('playback-state', () => {
     socket.on('init-playback-state', (state: PlaybackState) => {
       initVideoId.value = state.videoId
       initTime.value = state.time
+      socket.emit('sync-playback-state')
     })
 
     socket.on('update-playback-state', (state: PlaybackState) => {
