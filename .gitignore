@@ -29,4 +29,6 @@ coverage
 
 *.tsbuildinfo
 
-serverState.json
+backend/config/production.js
+backend/config/development.js
+backend/serverState.json

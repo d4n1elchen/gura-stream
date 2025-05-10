@@ -30,11 +30,13 @@ class Discord {
   private clientId: string
   private clientSecret: string
   private redirectUri: string
+  private atlantisGuildId: string
 
   constructor() {
     this.clientId = config.get('discord.clientId')
     this.clientSecret = config.get('discord.clientSecret')
     this.redirectUri = config.get('discord.redirectUri')
+    this.atlantisGuildId = config.get('discord.atlantisGuildId')
   }
 
   async getToken(code: string): Promise<DiscordToken> {
@@ -47,17 +49,20 @@ class Discord {
     })
 
     const response = await axios.post<DiscordToken>(
-      'https://discord.com/api/oauth2/token',
+      'https://discord.com/api/v10/oauth2/token',
       params,
       {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          Accept: 'application/json',
         },
       }
     )
 
     return response.data
+  }
+
+  async getAtlantisMember(token: string): Promise<DiscordGuildMember> {
+    return await this.getGuildMember(this.atlantisGuildId, token)
   }
 
   async getGuildMember(guildId: string, token: string): Promise<DiscordGuildMember> {

@@ -1,19 +1,29 @@
 <script setup lang="ts">
 import { useChatStore } from '@/stores/chat'
 import { useConnectionStore } from '@/stores/connection'
+import { useDiscordStore } from '@/stores/discord'
 import { usePlaybackStateStore } from '@/stores/playbackState'
 import { nextTick, onUpdated, ref, useTemplateRef, watch } from 'vue'
 
 const chatStore = useChatStore()
 const connectionStore = useConnectionStore()
 const playbackStateStore = usePlaybackStateStore()
+const discordStore = useDiscordStore()
 
 const newMessage = ref('')
-const userId = ref('')
+
+discordStore.fetchUserInfo()
+
+const oauth2Url =
+  'https://discord.com/oauth2/authorize?client_id=1370294188238835722&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2F&scope=identify+guilds.members.read'
+
+function goToDiscordLogin() {
+  window.location.href = oauth2Url
+}
 
 function sendMessage() {
-  if (newMessage.value.trim() !== '' && userId.value.trim() !== '') {
-    chatStore.sendMessage(userId.value, newMessage.value)
+  if (newMessage.value.trim() !== '' && discordStore.isLoggedIn) {
+    chatStore.sendMessage(discordStore.username, newMessage.value.trim())
     newMessage.value = ''
   }
 }
@@ -53,11 +63,12 @@ watch(chatStore.chat, scrollToBottom)
     display: flex;
     gap: 10px;
 
-    .user-id-input {
-      flex: 1;
-    }
     .message-input {
-      flex: 2;
+      flex-grow: 1;
+    }
+
+    .login-button {
+      flex-grow: 1;
     }
   }
 }
@@ -86,11 +97,13 @@ watch(chatStore.chat, scrollToBottom)
     </div>
     <div class="ts-divider"></div>
     <div class="chat-input ts-content">
-      <div class="user-id-input ts-input">
-        <input v-model="userId" placeholder="Name" />
-      </div>
-      <div class="message-input ts-input">
+      <div v-if="discordStore.isLoggedIn" class="message-input ts-input">
         <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="Chat..." />
+      </div>
+      <div v-else class="login-button">
+        <button class="ts-button is-fluid" @click="goToDiscordLogin">
+          <span class="pi pi-discord" style="margin-right: 5px"></span> Discord Login
+        </button>
       </div>
     </div>
   </div>

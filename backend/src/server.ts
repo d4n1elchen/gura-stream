@@ -1,4 +1,6 @@
-import type { ChatMessage, PlaybackState } from '@common/types'
+import type { ChatMessage, PlaybackState, UserInfo } from '@common/types'
+import axios, { AxiosError } from 'axios'
+import cors from 'cors'
 import express from 'express'
 import session from 'express-session'
 import fs from 'fs'
@@ -8,14 +10,18 @@ import { Server } from 'socket.io'
 import { discord } from './discord'
 import { PlayerState, SimPlayer } from './player'
 
+const corsOptions = {
+  origin: 'http://localhost:5173',
+  credentials: true,
+}
+
 const app = express()
 const server = createServer(app)
-const io = new Server(server, {
-  cors: {
-    origin: 'http://localhost:5173',
-  },
-})
+const io = new Server(server, { cors: corsOptions })
 const redis = new Redis()
+
+app.use(cors(corsOptions))
+app.use(express.json())
 
 type ServerState = {
   playerState: PlayerState
@@ -101,25 +107,59 @@ app.use(
     secret: 'supersecretkey',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: true },
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+    },
   })
 )
 
-app.post('/login', async ({ query, session }, res) => {
-  const code = query.code
+app.post('/login', async ({ body, session }, res) => {
+  if (session.userId && (await redis.exists(`user:${session.userId}`)) === 1) {
+    res.status(200).send('Already logged in')
+    return
+  }
+  const code = body.code
   if (!code) {
     res.status(400).send('Missing code')
     return
   }
   try {
     const token = await discord.getToken(code as string)
-    const member = await discord.getGuildMember('guildid', token.access_token)
-    session.username = member.user.username
-    redis.set(`user:${member.user.id}`, JSON.stringify(member))
+    const member = await discord.getAtlantisMember(token.access_token)
+    session.userId = member.user.id
+    await redis.set(`user:${session.userId}`, JSON.stringify({ member, token }))
     res.status(200).send('OK')
   } catch (err) {
+    if (axios.isAxiosError(err)) {
+      const axiosError = err as AxiosError
+      res.status(axiosError.response?.status || 500)
+    }
     res.send(err)
   }
+})
+
+const requireAuth = async (req: any, res: any, next: any) => {
+  if (!req.session.userId) {
+    res.status(401).send('Unauthorized')
+    return
+  }
+  const user = await redis.get(`user:${req.session.userId}`)
+  if (!user) {
+    res.status(401).send('Unauthorized')
+    return
+  }
+  res.locals.user = JSON.parse(user)
+  next()
+}
+
+app.post('/user', requireAuth, (req, res) => {
+  const { member } = res.locals.user
+  const userInfo: UserInfo = {
+    id: member.user.id,
+    username: member.user.username,
+    avatar: member.user.avatar,
+  }
+  res.status(200).json(userInfo)
 })
 
 server.listen(3000, () => {
