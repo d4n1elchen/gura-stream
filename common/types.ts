@@ -2,6 +2,7 @@ export type UserInfo = {
   id: string
   username: string
   avatar: string
+  roles: string[]
 }
 
 export type ChatMessage = {

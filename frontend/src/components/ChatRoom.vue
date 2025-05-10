@@ -3,6 +3,7 @@ import { useChatStore } from '@/stores/chat'
 import { useConnectionStore } from '@/stores/connection'
 import { useDiscordStore } from '@/stores/discord'
 import { usePlaybackStateStore } from '@/stores/playbackState'
+import type { UserInfo } from '@common/types'
 import { nextTick, onUpdated, ref, useTemplateRef, watch } from 'vue'
 
 const chatStore = useChatStore()
@@ -23,6 +24,11 @@ function goToDiscordLogin() {
 
 function getAvatarUrl(avatar: string) {
   return `https://cdn.discordapp.com/avatars/${discordStore.user?.id}/${avatar}.png`
+}
+
+function isForeverShimp(user: UserInfo) {
+  const foreverShrimpRoleId = '846616775148044318'
+  return user.roles.includes(foreverShrimpRoleId)
 }
 
 function sendMessage() {
@@ -76,6 +82,10 @@ watch(chatStore.chat, scrollToBottom)
 
       .username {
         margin-right: 5px;
+
+        &.membership {
+          color: #2ba640;
+        }
       }
     }
   }
@@ -115,7 +125,11 @@ watch(chatStore.chat, scrollToBottom)
         <span class="avatar ts-image is-circular"
           ><img :src="getAvatarUrl(message.user.avatar)" alt="" srcset=""
         /></span>
-        <span class="username ts-text is-heavy">{{ message.user.username }}</span>
+        <span
+          class="username ts-text is-heavy"
+          :class="{ membership: isForeverShimp(message.user) }"
+          >{{ message.user.username }}</span
+        >
         {{ message.message }}
       </div>
       <div ref="chat-bottom"></div>

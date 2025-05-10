@@ -1,3 +1,4 @@
+import { UserInfo } from '@common/types'
 import axios from 'axios'
 import config from 'config'
 
@@ -15,15 +16,9 @@ export type DiscordUser = {
   avatar: string
 }
 
-export type DiscordRole = {
-  id: string
-  name: string
-  icon: string
-}
-
 export type DiscordGuildMember = {
   user: DiscordUser
-  roles: DiscordRole[]
+  roles: string[]
 }
 
 class Discord {
@@ -61,11 +56,11 @@ class Discord {
     return response.data
   }
 
-  async getAtlantisMember(token: string): Promise<DiscordGuildMember> {
+  async getAtlantisMember(token: string): Promise<UserInfo> {
     return await this.getGuildMember(this.atlantisGuildId, token)
   }
 
-  async getGuildMember(guildId: string, token: string): Promise<DiscordGuildMember> {
+  async getGuildMember(guildId: string, token: string): Promise<UserInfo> {
     const response = await axios.get<DiscordGuildMember>(
       `https://discord.com/api/v10/users/@me/guilds/${guildId}/member`,
       {
@@ -78,16 +73,10 @@ class Discord {
     )
 
     return {
-      user: {
-        id: response.data.user.id,
-        username: response.data.user.username,
-        avatar: response.data.user.avatar,
-      },
-      roles: response.data.roles.map((role: any) => ({
-        id: role.id,
-        name: role.name,
-        icon: role.icon,
-      })),
+      id: response.data.user.id,
+      username: response.data.user.username,
+      avatar: response.data.user.avatar,
+      roles: response.data.roles,
     }
   }
 }

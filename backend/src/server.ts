@@ -1,4 +1,4 @@
-import type { ChatMessage, PlaybackState, UserInfo } from '@common/types'
+import type { ChatMessage, PlaybackState } from '@common/types'
 import axios, { AxiosError } from 'axios'
 import { RedisStore } from 'connect-redis'
 import cors from 'cors'
@@ -132,9 +132,9 @@ app.post('/login', async ({ body, session }, res) => {
   }
   try {
     const token = await discord.getToken(code as string)
-    const member = await discord.getAtlantisMember(token.access_token)
-    session.userId = member.user.id
-    await redis.set(`user:${session.userId}`, JSON.stringify({ member, token }))
+    const user = await discord.getAtlantisMember(token.access_token)
+    session.userId = user.id
+    await redis.set(`user:${session.userId}`, JSON.stringify({ user, token }))
     res.status(200).send('OK')
   } catch (err) {
     if (axios.isAxiosError(err)) {
@@ -160,13 +160,7 @@ const requireAuth = async (req: any, res: any, next: any) => {
 }
 
 app.post('/user', requireAuth, (req, res) => {
-  const { member } = res.locals.user
-  const userInfo: UserInfo = {
-    id: member.user.id,
-    username: member.user.username,
-    avatar: member.user.avatar,
-  }
-  res.status(200).json(userInfo)
+  res.status(200).json(res.locals.user.user)
 })
 
 server.listen(3000, () => {
