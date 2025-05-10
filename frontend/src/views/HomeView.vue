@@ -4,6 +4,11 @@ import YouTubePlayer from '@/components/YouTubePlayer.vue'
 import { usePlaybackStateStore } from '@/stores/playbackState'
 
 const playbackStateStore = usePlaybackStateStore()
+
+function onReady() {
+  console.log('YouTube player is ready')
+  playbackStateStore.syncPlaybackState()
+}
 </script>
 
 <style scoped lang="scss">
@@ -42,12 +47,7 @@ main {
 
 <template>
   <main>
-    <YouTubePlayer
-      :v-if="playbackStateStore.initVideoId !== ''"
-      :init-video-id="playbackStateStore.initVideoId"
-      :init-time="playbackStateStore.initTime"
-      id="player"
-    />
+    <YouTubePlayer id="player" @on-ready="onReady" />
     <ChatRoom id="chat" />
   </main>
 </template>

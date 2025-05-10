@@ -9,18 +9,10 @@ export const usePlaybackStateStore = defineStore('playback-state', () => {
   const initTime = ref(0)
 
   function bindEvents() {
-    socket.on('init-playback-state', (state: PlaybackState) => {
-      console.log('init-playback-state', state)
-      initVideoId.value = state.videoId
-      initTime.value = state.time
-    })
-
     socket.on('update-playback-state', (state: PlaybackState) => {
       console.log('update-playback-state', state)
       emitter.emit('sync-playback-state', state)
     })
-
-    socket.emit('request-init-playback-state')
   }
 
   function syncPlaybackState() {

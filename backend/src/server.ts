@@ -97,10 +97,6 @@ io.on('connection', async (socket) => {
   console.log('a user connected: ' + socket.id)
 
   // Playback state sync
-  socket.on('request-init-playback-state', () => {
-    socket.emit('init-playback-state', player.toPlaybackState())
-  })
-
   socket.on('sync-playback-state', () => {
     socket.emit('update-playback-state', player.toPlaybackState())
   })

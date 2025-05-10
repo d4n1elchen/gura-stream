@@ -4,6 +4,8 @@ import { type PlaybackState } from '@common/types'
 import { useTemplateRef } from 'vue'
 import YouTube from 'vue3-youtube'
 
+const emit = defineEmits(['onReady'])
+
 const props = defineProps({
   initVideoId: {
     type: String,
@@ -57,6 +59,7 @@ function onReady() {
         }
       }, 1000)
     })
+    emit('onReady')
   }
 }
 </script>
