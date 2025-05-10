@@ -1,16 +1,15 @@
+import { config } from '@/config'
 import { type UserInfo } from '@common/types'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-
-const URL = process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:3000'
 
 export const useDiscordStore = defineStore('discord', () => {
   const isLoggedIn = ref(false)
   const user = ref({} as UserInfo)
   const backend = axios.create({
     withCredentials: true,
-    baseURL: URL,
+    baseURL: config.backendUrl,
   })
 
   async function login(code: string) {
