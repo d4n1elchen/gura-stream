@@ -1,5 +1,6 @@
 import type { ChatMessage, PlaybackState } from '@common/types'
 import axios, { AxiosError } from 'axios'
+import config from 'config'
 import { RedisStore } from 'connect-redis'
 import cors from 'cors'
 import express from 'express'
@@ -10,7 +11,6 @@ import Redis from 'ioredis'
 import { Server } from 'socket.io'
 import { discord } from './discord'
 import { PlayerState, SimPlayer } from './player'
-import config from 'config'
 
 const corsOptions = {
   origin: ['http://localhost:5173', 'http://localhost:8080', 'https://gura.danielchen.cc'],
@@ -37,6 +37,7 @@ app.use(
     secret: 'supersecretkey',
     resave: false,
     saveUninitialized: true,
+    proxy: process.env.NODE_ENV === 'production',
     cookie: {
       secure: process.env.NODE_ENV === 'production',
     },
